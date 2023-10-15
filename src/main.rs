@@ -27,7 +27,7 @@ fn read_files_in_folder(){
                     test_recur(&path);
                 },
                 false => {
-                    let result = run_command(&file);
+                    let result = run_command(&file, &meta_data);
                     match result {
                         Ok(Some(_)) => (),
                         Ok(None) => (),
@@ -41,7 +41,7 @@ fn read_files_in_folder(){
 
 
 fn test_recur(args: &PathBuf){
-    for files in fs::read_dir(&args).expect("failed to open"){
+    for files in fs::read_dir(&args).expect("msg"){
         let meta_data = files.as_ref().unwrap().metadata().unwrap();
         let file = &files.as_ref().unwrap().path();
         match meta_data.is_dir(){
@@ -51,7 +51,7 @@ fn test_recur(args: &PathBuf){
                 test_recur(file)
             },
             false => {
-               match run_command(file) {
+               match run_command(file, &meta_data) {
                 Ok(Some(_)) => (),
                 Ok(None) => {
                     continue
@@ -64,7 +64,7 @@ fn test_recur(args: &PathBuf){
 }
 
 
-fn run_command(args:&PathBuf)->std::io::Result<Option<()>>{
+fn run_command(args:&PathBuf, metadata:&Metadata)->std::io::Result<Option<()>>{
 
     let output = if cfg!(target_os = "windows") {
         Command::new("cmd")
@@ -97,3 +97,4 @@ fn run_command(args:&PathBuf)->std::io::Result<Option<()>>{
 }
 
 }
+
