@@ -9,37 +9,30 @@ use std::mem::drop;
 
 
 
-//use std::path;
 fn main() {
     read_files_in_folder();
 }
 
 fn read_files_in_folder(){
 
-    let path = PathBuf::from("/Users/mac");
+    let path = PathBuf::from("/");
     let dir = current_dir().unwrap();
-    for files in fs::read_dir(&dir).expect("{file:?} failed to open"){
+    for files in fs::read_dir(&path).expect("{file:?} failed to open"){
         let meta_data = files.as_ref().unwrap().metadata().unwrap();
         let file = &files.as_ref().unwrap().path();  
             match meta_data.is_dir() {
                 true => {
                     let path = Path::new(&dir).join(file);
                     println!("{path:?} is about to enter");
-                    //let duration = time::Duration::from_millis(100);
-                    //thread::sleep(duration);
                     test_recur(&path);
                 },
                 false => {
-                    let result = run_command(&file).unwrap_or_else(|error|{
-                        match error.kind(){
-                            ErrorKind::PermissionDenied => {
-                                println!("permmision to check this file denied");
-                            }
-                            _ => ()
-                        }
-                    });
-                    
-                }
+                    let result = run_command(&file);
+                    match result {
+                        Ok(Some(_)) => (),
+                        Ok(None) => (),
+                        Err(e) => panic!("Unexpected error: {}", e),
+                    }
 
             }
     }
@@ -48,7 +41,7 @@ fn read_files_in_folder(){
 
 
 fn test_recur(args: &PathBuf){
-    for files in fs::read_dir(&args).expect("{files:?} failed to open"){
+    for files in fs::read_dir(&args).expect("failed to open"){
         let meta_data = files.as_ref().unwrap().metadata().unwrap();
         let file = &files.as_ref().unwrap().path();
         match meta_data.is_dir(){
@@ -58,38 +51,49 @@ fn test_recur(args: &PathBuf){
                 test_recur(file)
             },
             false => {
-                run_command(file);
+               match run_command(file) {
+                Ok(Some(_)) => (),
+                Ok(None) => {
+                    continue
+                },
+                Err(e) => panic!("Unexpected error: {}", e),
+               }
             }
         }
     }
 }
 
 
-fn run_command(args:&PathBuf)->std::io::Result<()>{
+fn run_command(args:&PathBuf)->std::io::Result<Option<()>>{
 
     let output = if cfg!(target_os = "windows") {
         Command::new("cmd")
             .args(["/C", "echo This is windows"])
-            //.spawn()
             .output()
-            .expect("failed to execute process")
     } else {
-    //thread::sleep(time::Duration::from_millis(100));
     Command::new("du")
         .arg("-hs")
         .arg(args)
-        //.spawn()
-        .output()?            
-        //.expect("failed to execute process")
+        .output()            
     };
     println!("{output:?}");
-    if output.status.success() {
-        let s = String::from_utf8_lossy(&output.stdout);
-        println!("{}", s);
+    match output {
+        Ok(output) => {
+            if output.status.success() {
+                let s = String::from_utf8_lossy(&output.stdout);
+                println!("{}", s);
+            }
+            Ok(Some(()))
+        },
+        Err(e) => {
+            if e.kind() == ErrorKind::PermissionDenied {
+                println!("Permission to check this file denied");
+                Ok(None)
+            } else {
+                Err(e)
+            }
+        }
     }
-    Ok(())
-
-
-    
+}
 
 }
