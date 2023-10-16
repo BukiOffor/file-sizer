@@ -1,6 +1,5 @@
 #![allow(unused)]
 use std::io::ErrorKind;
-use std::ops::Deref;
 use std::process::Command;
 use std::ffi::OsString;
 use std::fs::{File, Metadata};
@@ -11,87 +10,91 @@ use std::mem::drop;
 
 
 fn main() {
-    read_files()
+    read_files_in_folder();
 }
 
+fn read_files_in_folder(){
 
-
-
-
-
-
-
-fn test_read_files(path:&PathBuf){
-    if fs::read_dir(&path).is_ok() {
-        for files in fs::read_dir(&path).expect("{file:?} failed to open"){
-            let meta_data = files.as_ref().unwrap().metadata().unwrap();
-            let file = &files.as_ref().unwrap().path();  
+    let path = PathBuf::from("/");
+    let dir = current_dir().unwrap();
+    for files in fs::read_dir(&path).expect("{file:?} failed to open"){
+        let meta_data = files.as_ref().unwrap().metadata().unwrap();
+        let file = &files.as_ref().unwrap().path();  
             match meta_data.is_dir() {
                 true => {
-                    test_recur(&file)
+                    let path = Path::new(&dir).join(file);
+                    println!("{path:?} is about to enter");
+                    test_recur(&path);
                 },
                 false => {
-                   run_command(&meta_data, file) 
-                }
-        }
+                    let result = run_command(&file, &meta_data);
+                    match result {
+                        Ok(Some(_)) => (),
+                        Ok(None) => (),
+                        Err(e) => panic!("Unexpected error: {}", e),
+                    }
 
+            }
     }
-}   
     
-    
-    
-    
-    
-    
-    // let file: Result<fs::ReadDir, std::io::Error> = fs::read_dir(path);
-    // match file {
-    //     Ok(file) => {
-    //         Ok(Some(file))
-    //     }
-    //     Err(err) => {
-    //        if err.kind() == ErrorKind::PermissionDenied {
-    //             Ok(None)
-    //        } else {
-    //             Err(err)
-    //        }
-           
-    //     }
-        
-    //} 
 }
 
 
 fn test_recur(args: &PathBuf){
-    if fs::read_dir(&args).is_ok() {
-        for files in fs::read_dir(&args).expect("msg"){
-            let meta_data = files.as_ref().unwrap().metadata();
-            
-
-           let meta_data = files.as_ref().unwrap().metadata().unwrap();
-            
-            let file = &files.as_ref().unwrap().path();
-            match meta_data.is_dir(){
-                true =>{
-                    let file = &files.unwrap().path();
-                    println!("{file:?} is a folder");
-                    test_recur(file)
+    for files in fs::read_dir(&args).expect("msg"){
+        let meta_data = files.as_ref().unwrap().metadata().unwrap();
+        let file = &files.as_ref().unwrap().path();
+        match meta_data.is_dir(){
+            true =>{
+                let file = &files.unwrap().path();
+                println!("{file:?}");
+                test_recur(file)
+            },
+            false => {
+               match run_command(file, &meta_data) {
+                Ok(Some(_)) => (),
+                Ok(None) => {
+                    continue
                 },
-                false => {
-                run_command(&meta_data, &file)               
-                }
+                Err(e) => panic!("Unexpected error: {}", e),
+               }
             }
         }
     }
-}    
-
-fn read_files(){
-    let path = PathBuf::from("/");
-    let dir = current_dir().unwrap();
-    test_read_files(&path);
-    
 }
 
-fn run_command(meta_data: &Metadata, file:&PathBuf){
-    let size = meta_data.len();
-    println!("{:?} has this size: {size}", file)
+
+fn run_command(args:&PathBuf, metadata:&Metadata)->std::io::Result<Option<()>>{
+
+    let output = if cfg!(target_os = "windows") {
+        Command::new("cmd")
+            .args(["/C", "echo This is windows"])
+            .output()
+    } else {
+    Command::new("du")
+        .arg("-hs")
+        .arg(args)
+        .output()            
+    };
+    println!("{output:?}");
+    match output {
+        Ok(output) => {
+            if output.status.success() {
+                let s = String::from_utf8_lossy(&output.stdout);
+                println!("{}", s);
+            }
+            Ok(Some(()))
+        },
+        Err(e) => {
+            if e.kind() == ErrorKind::PermissionDenied {
+                println!("Permission to check this file denied");
+                Ok(None)
+            } else {
+                Err(e)
+            }
+        }
+    }
 }
+
+}
+
