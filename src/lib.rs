@@ -1,18 +1,17 @@
 #![allow(unused)]
-
 use std::io::ErrorKind;
 use std::fs::{File, Metadata};
-use std::{fs, fs::metadata, io::Error, thread, path::Path, path::PathBuf, env, time};
+use std::{fs, process, fs::metadata, io::Error, thread, path::Path, path::PathBuf, env, time};
 use std::env::{current_dir, set_current_dir};
 use std::mem::drop;
 use log;
 
 
-
 // this function receives a file path as an arguement
 pub fn test_read_files(path:&PathBuf){
     log::info!("sizer initialized at {}", path.as_os_str().to_str().unwrap());
-    
+    let now = time::Instant::now();
+
     //check if path returns an OK()
     if fs::read_dir(path).is_ok() {
         //reads the path into an iterable
@@ -59,11 +58,14 @@ pub fn test_read_files(path:&PathBuf){
 
              }
         handle.join();
-        log::info!("sizer ran succesfully");
+        let finished = now.elapsed().as_secs();
+        log::info!("finished succesfully in {} seconds", finished);
 
         }else{
             let error = fs::read_dir(path).unwrap_err();
             log::error!("{:?}", error.to_string());
+            process::exit(1);
+
         }         
 }
 
