@@ -5,6 +5,7 @@ use std::fs::{File, Metadata};
 use std::{fs, fs::metadata, io::Error, thread, path::Path, path::PathBuf, env, time};
 use std::env::{current_dir, set_current_dir};
 use std::mem::drop;
+use std::sync::mpsc;
 use log;
 
 
@@ -13,8 +14,36 @@ use log;
 pub fn test_read_files(path:&PathBuf){
     log::info!("sizer initialized at {}", path.as_os_str().to_str().unwrap());
     
+    //check if path returns an OK()
     if fs::read_dir(path).is_ok() {
-        for files in fs::read_dir(path).expect("{file:?} failed to open"){
+        //reads the path into an iterable
+        let dir = fs::read_dir(path).expect("{file:?} failed to open");
+        //split the iterable into different vectors
+        let (spawn, main):(Vec<_>, Vec<_>) = dir.enumerate().partition(|(i,_)| i%2 ==0);
+        //let (tx, rx) = mpsc::channel();
+
+        //Spawn a new thread to iterate over some     
+        let handle = thread::spawn(move||{
+            for (index,files) in spawn {
+                // get metadata of an entry
+                let meta_data = files.as_ref().unwrap().metadata().unwrap();
+                // gets the full path of an entry
+                let file = &files.as_ref().unwrap().path();  
+                //checks it entry is file or folder
+                match meta_data.is_dir() {
+                    true => {
+                        test_recur(&file)
+                    },
+                    false => {
+                        run_command(&meta_data, file) 
+                        }
+                    }
+                 }
+                thread::sleep(time::Duration::from_millis(5));
+
+        });
+
+        for (index,files) in main {
             // get metadata of an entry
             let meta_data = files.as_ref().unwrap().metadata().unwrap();
             // gets the full path of an entry
@@ -30,6 +59,9 @@ pub fn test_read_files(path:&PathBuf){
                 }
 
              }
+        handle.join();
+        log::info!("sizer ran succesfully");
+
         }else{
             let error = fs::read_dir(path).unwrap_err();
             log::error!("{:?}", error.to_string());
