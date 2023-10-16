@@ -9,7 +9,7 @@ fn main(){
     env_logger::init();
 
     // reads the home directory
-    let home_dir = PathBuf::from("/Users/mac/Downloads");
+    let home_dir = PathBuf::from("/Users/mac/");
     //gets the current directory
     let current_dir = current_dir().unwrap();
     test_read_files(&home_dir);

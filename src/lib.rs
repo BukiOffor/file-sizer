@@ -5,7 +5,6 @@ use std::fs::{File, Metadata};
 use std::{fs, fs::metadata, io::Error, thread, path::Path, path::PathBuf, env, time};
 use std::env::{current_dir, set_current_dir};
 use std::mem::drop;
-use std::sync::mpsc;
 use log;
 
 
@@ -20,7 +19,6 @@ pub fn test_read_files(path:&PathBuf){
         let dir = fs::read_dir(path).expect("{file:?} failed to open");
         //split the iterable into different vectors
         let (spawn, main):(Vec<_>, Vec<_>) = dir.enumerate().partition(|(i,_)| i%2 ==0);
-        //let (tx, rx) = mpsc::channel();
 
         //Spawn a new thread to iterate over some     
         let handle = thread::spawn(move||{
@@ -28,14 +26,15 @@ pub fn test_read_files(path:&PathBuf){
                 // get metadata of an entry
                 let meta_data = files.as_ref().unwrap().metadata().unwrap();
                 // gets the full path of an entry
-                let file = &files.as_ref().unwrap().path();  
+                let file = files.as_ref().unwrap().path();  
                 //checks it entry is file or folder
                 match meta_data.is_dir() {
                     true => {
                         test_recur(&file)
                     },
                     false => {
-                        run_command(&meta_data, file) 
+                    let large_file = run_command(&meta_data, &file); 
+
                         }
                     }
                  }
@@ -54,7 +53,7 @@ pub fn test_read_files(path:&PathBuf){
                     test_recur(&file)
                 },
                 false => {
-                    run_command(&meta_data, file) 
+                    let _ = run_command(&meta_data, file); 
                     }
                 }
 
@@ -95,30 +94,35 @@ fn test_recur(args: &PathBuf){
                 true =>{
                     let file = &files.unwrap().path();
                     //log::debug!("{file:?} is a folder");
-                    test_recur(file)
+                    let _ = test_recur(file);
                 },
                 false => {
-                run_command(&meta_data, &file)               
+                let file = run_command(&meta_data, &file);  
+                            
                 }
             }
         }
     }
+    
 }    
 
 
-fn run_command(meta_data: &Metadata, file:&PathBuf){
+fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf)-> Option<(& 'a PathBuf, f64)>{
     let size = meta_data.len();
-    let x = file.file_name().expect("failed to get file name for some reason").to_str().unwrap();
-
+    //let x = file.file_name().expect("failed to get file name for some reason").to_str().unwrap();
+    let x = file.as_os_str().to_str().unwrap();
     if size < 1024*1024 {
         //log::debug!("{}: {:}KB", x, size/1024):
+        None
     } 
     else {
         let size_in_mb = size as f64 / (1024 * 1024) as f64;
         //log::debug!("{:?}: {:.2}MB", x, size_in_mb);        
         if size as f64 > (100 * 1024 * 1024) as f64{
-            log::debug!("{}: {:.2}MB", x, size_in_mb); 
+            log::debug!("{}: {:.2}MB", x, size_in_mb);
+            return Some((file, size_in_mb))
         }
+        None
     }
 }
 
