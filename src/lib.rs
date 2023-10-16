@@ -11,7 +11,8 @@ use log;
 
 // this function receives a file path as an arguement
 pub fn test_read_files(path:&PathBuf){
-
+    log::info!("sizer initialized at {}", path.as_os_str().to_str().unwrap());
+    
     if fs::read_dir(path).is_ok() {
         for files in fs::read_dir(path).expect("{file:?} failed to open"){
             // get metadata of an entry
@@ -76,16 +77,17 @@ fn test_recur(args: &PathBuf){
 fn run_command(meta_data: &Metadata, file:&PathBuf){
     let size = meta_data.len();
     let x = file.file_name().expect("failed to get file name for some reason").to_str().unwrap();
-    
+
     if size < 1024*1024 {
         //log::debug!("{}: {:}KB", x, size/1024);
-    } else{
+    } 
+    else {
         let size_in_mb = size as f64 / (1024 * 1024) as f64;
-        log::debug!("{:?}: {:.2}MB", x, size_in_mb);
-        //if size_in_mb > (1024 * 1024) as f64{
-           // log::debug!("{:?}: {}MB", x, size_in_mb);
-       // }
-    }   
+        //log::debug!("{:?}: {:.2}MB", x, size_in_mb);        
+        if size as f64 > (100 * 1024 * 1024) as f64{
+            log::debug!("{}: {:.2}MB", x, size_in_mb); 
+        }
+    }
 }
 
 // thread using 2 threads, push the files bigger than 180mb to a vector using a message
