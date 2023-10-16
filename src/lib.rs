@@ -79,7 +79,7 @@ fn run_command(meta_data: &Metadata, file:&PathBuf){
     let x = file.file_name().expect("failed to get file name for some reason").to_str().unwrap();
 
     if size < 1024*1024 {
-        //log::debug!("{}: {:}KB", x, size/1024);
+        //log::debug!("{}: {:}KB", x, size/1024):
     } 
     else {
         let size_in_mb = size as f64 / (1024 * 1024) as f64;

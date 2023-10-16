@@ -98,3 +98,49 @@ fn run_command(args:&PathBuf, metadata:&Metadata)->std::io::Result<Option<()>>{
 
 }
 
+// pub fn impl_thread(path:&PathBuf){
+//     log::info!("sizer initialized at {}", path.as_os_str().to_str().unwrap());
+    
+
+//     let mut base_folder : Vec<DirEntry>  = Vec::new() ;
+//     for files in fs::read_dir(path).expect("{file:?} failed to open"){
+//         base_folder.push(files.unwrap());
+//     }
+//     let folders = base_folder.into_iter();
+//     let mut counter = Arc::new(Mutex::new(folders));
+
+//     let main_counter = Arc::clone(&counter);
+
+//     let handle = thread::spawn(move||{
+//         let counter = Arc::clone(&counter);
+
+//         loop {
+//             log::info!("spawned thread");
+//             match counter.lock().unwrap().next() {
+//             Some(file) => {
+//                 let meta_data = file.metadata().unwrap();
+//                 run_command(&meta_data, &file.path())           
+//             },
+//             None => {
+//                 log::info!("sizer ran succesfully");
+//                 break
+//             }
+//         }
+//     }
+//     });
+
+//     loop {
+//         match main_counter.lock().unwrap().next() {
+//             Some(file) => {
+//                 log::info!("main thread");
+//                 let meta_data = file.metadata().unwrap();
+//                 run_command(&meta_data, &file.path())            
+//             },
+//             None => {
+//                 log::info!("sizer ran succesfully");
+//                 break
+//             }
+//         }
+//     }
+//     handle.join();
+// }
