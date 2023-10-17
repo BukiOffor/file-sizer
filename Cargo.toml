@@ -9,7 +9,7 @@ description = "his tool searches for files bigger than 100mb in a given director
 readme = "README.md"
 homepage = "https://github.com/BukiOffor/file-sizer"
 repository = "https://github.com/BukiOffor/file-sizer"
-keywords = ["cli", "search","file size", "disk utilities","file"]
+keywords = ["cli", "search","utility", "terminal","logging", "io","utils"]
 categories = ["command-line-utilities"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
