@@ -19,8 +19,8 @@ pub fn entry(path:&PathBuf, size: Option<&String>)-> Result<(),Error> {
         //split the iterable into different vectors
         let (spawn, main):(Vec<_>, Vec<_>) = dir.enumerate().partition(|(i,_)| i%2 ==0);
         let filter = match size.is_none(){
-            false =>  size.unwrap().parse::<i64>().unwrap(), //takes care of error in the main function
-            true => 100
+            true => 100,
+            false =>  size.unwrap().parse::<i64>().unwrap() //takes care of error in the main function
         };
         log::info!("you are filtering with {filter} mb");
         let spawn_size = filter.clone();
@@ -170,14 +170,15 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
     #[test]
     fn test_read_directory_and_iterate() {
         // Arrange
-        let path = PathBuf::from("path/to/directory");
+        let path = PathBuf::from(".");
         let size = None;
     
         // Act
-        entry(&path, size);
+        let value = entry(&path, size);
     
         // Assert
-        // Add assertions here
+        assert!(value.is_ok())
+
     }
     
         // Function filters files based on size and returns the correct files
@@ -191,7 +192,6 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
         let result = entry(&path, size.as_ref());
     
         // Assert
-        // Add assertions here
         assert!(result.is_ok())
 
     }
@@ -207,7 +207,6 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
         let result = entry(&path, size);
     
         // Assert
-        // Add assertions here
         assert!(result.is_ok())
 
     }
@@ -223,7 +222,6 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
         let result = entry(&path, size);
     
         // Assert
-        // Add assertions here
         assert!(result.is_err())
     }
     
@@ -238,10 +236,7 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
         let result = entry(&path, size);
     
         // Assert
-        // Add assertions here
         assert!(result.is_ok())
     }
-    
-    // Size argument is not a valid integer, function sets filter to default value of 100
-    
+        
     

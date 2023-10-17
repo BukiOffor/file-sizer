@@ -41,7 +41,7 @@ fn main(){
     env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
-    let matches = Command::new("Sizer")
+    let matches = Command::new("sizer")
     .version("1.0")
     .author("Buki O. <ebuka2264@yahoo.com>")
     .about("This tool searches for files bigger than 100mb in a given directory or the whole file system if no filepath is given")
