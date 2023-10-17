@@ -53,21 +53,34 @@ fn main(){
     match path {
         Some(path) => {            
             let size: Option<&String> = matches.get_one::<String>("size");
+            if size.unwrap().parse::<i64>().is_err(){
+                log::error!("Invalid size arguement defaulting to 100mb");
+                let home_dir = PathBuf::from(path);
+                entry(&home_dir, None);
+            }else{            
+                let home_dir = PathBuf::from(path);
+                entry(&home_dir, size);
             
-            let home_dir = PathBuf::from(path);
-            entry(&home_dir, size);
-            
-        }
+        }}
         None => {
             let size: Option<&String> = matches.get_one::<String>("size"); // make sure its a valid number
-            //gets the current directory
-            let root_dir = PathBuf::from("/");
-            entry(&root_dir, size);
+            if size.unwrap().parse::<i64>().is_err(){
+                log::error!("Invalid size arguement defaulting to 100mb");
+                let root_dir = PathBuf::from("/");
+                entry(&root_dir, None);
+            }else{            
+                //gets the current directory
+                let root_dir = PathBuf::from("/");
+                entry(&root_dir, size);
+            }
         }
     }
-
     
 }
+
+
+
+
 
 
 

@@ -8,7 +8,7 @@ use log;
 
 
 // this function receives a file path as an arguement
-pub fn entry(path:&PathBuf, size: Option<&String>){
+pub fn entry(path:&PathBuf, size: Option<&String>)-> Result<(),Error> {
     log::info!("sizer initialized at {}", path.as_os_str().to_str().unwrap());
     let now = time::Instant::now();
 
@@ -19,7 +19,7 @@ pub fn entry(path:&PathBuf, size: Option<&String>){
         //split the iterable into different vectors
         let (spawn, main):(Vec<_>, Vec<_>) = dir.enumerate().partition(|(i,_)| i%2 ==0);
         let filter = match size.is_none(){
-            false =>  size.unwrap().parse::<i64>().unwrap(), //take care of error
+            false =>  size.unwrap().parse::<i64>().unwrap(), //takes care of error in the main function
             true => 100
         };
         log::info!("you are filtering with {filter} mb");
@@ -65,11 +65,14 @@ pub fn entry(path:&PathBuf, size: Option<&String>){
         handle.join();
         let finished = now.elapsed().as_secs();
         log::info!("finished succesfully in {} seconds", finished);
+        Ok(())
 
         }else{
             let error = fs::read_dir(path).unwrap_err();
             log::error!("{:?}", error.to_string());
-            process::exit(1);
+            //Err(error.to_string());
+            Err(error)
+            //process::exit(1);
 
         }         
 }
@@ -161,3 +164,84 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
 // loop through the vector and display the results at the end
 // allow args as file path and or file size to display
 // change 1000MB to 1GB
+
+
+    // Function successfully reads the directory and iterates over all files and folders
+    #[test]
+    fn test_read_directory_and_iterate() {
+        // Arrange
+        let path = PathBuf::from("path/to/directory");
+        let size = None;
+    
+        // Act
+        entry(&path, size);
+    
+        // Assert
+        // Add assertions here
+    }
+    
+        // Function filters files based on size and returns the correct files
+    #[test]
+    fn test_filter_files_based_on_size() {
+        // Arrange
+        let path = PathBuf::from(".");
+        let size = Some(String::from("50"));
+    
+        // Act
+        let result = entry(&path, size.as_ref());
+    
+        // Assert
+        // Add assertions here
+        assert!(result.is_ok())
+
+    }
+    
+        // Function logs info and debug messages correctly
+    #[test]
+    fn test_log_messages_correctly() {
+        // Arrange
+        let path = PathBuf::from(".");
+        let size = None;
+    
+        // Act
+        let result = entry(&path, size);
+    
+        // Assert
+        // Add assertions here
+        assert!(result.is_ok())
+
+    }
+    
+        // Directory does not exist, function logs error message and exits with status code 1
+    #[test]
+    fn test_directory_not_exist_logs_error_and_exits() {
+        // Arrange
+        let path = PathBuf::from("nonexistent/directory");
+        let size = None;
+    
+        // Act
+        let result = entry(&path, size);
+    
+        // Assert
+        // Add assertions here
+        assert!(result.is_err())
+    }
+    
+        // File or folder metadata cannot be accessed, function continues iterating
+    #[test]
+    fn test_metadata_cannot_be_accessed_continues_iterating() {
+        // Arrange
+        let path = PathBuf::from(".");
+        let size = None;
+    
+        // Act
+        let result = entry(&path, size);
+    
+        // Assert
+        // Add assertions here
+        assert!(result.is_ok())
+    }
+    
+    // Size argument is not a valid integer, function sets filter to default value of 100
+    
+    
