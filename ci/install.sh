@@ -31,7 +31,7 @@ main() {
     esac
 
     # This fetches latest stable release
-    local tag=$(git ls-remote --tags --refs --exit-code https://github.com/japaric/cross \
+    local tag=$(git ls-remote --tags --refs --exit-code https://github.com/BukiOffor/file-sizer \
                        | cut -d/ -f3 \
                        | grep -E '^v[0.1.0-9.]+$' \
                        | $sort --version-sort \
