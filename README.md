@@ -1,7 +1,7 @@
 ## Summary
 This code implements a Rust program that searches for files bigger than 100mb in a given directory or the whole file system if no filepath is given. It uses the `clap` and `std` libraries for command line argument parsing and file size calculation, respectively.
 
-## Example Usage
+## Example Usage For the Script
 ```rust
 // Run the program with a specific directory path
 $ ./sizer -p /path/to/directory
@@ -31,3 +31,49 @@ ___
 ### Outputs
 None. The function performs file size calculations and logging based on the provided command line arguments.
 ___
+
+# Installation Guidelines
+
+These guidelines will help you install and set up sizer on your system. Please follow these steps carefully to ensure a smooth installation process.
+
+## Prerequisites
+
+Before you begin, make sure your system meets the following prerequisites:
+
+- Running a modern OS
+
+## Installation Steps
+
+
+1. **Install Sizer**
+
+   Depending on your operating system, follow the relevant installation method:
+
+   - **macOS:**
+        ```bash 
+        brew tap BukiOffor/homebrew-sizer
+        brew install sizer
+        ```
+
+   - **Windows:**
+     ```
+     - Download the installer.
+     - Run the installer and follow the on-screen instructions.
+     ```
+   
+   - **Linux:**
+     ```
+     - Download the Linux package or use package manager commands (e.g., `apt`, `yum`) to install.
+     ```
+2. **Configuration (if applicable)**
+
+   Some software/tools may require configuration. Refer to the official documentation for details on how to configure sizer to suit your needs.
+
+3. **Verification**
+
+   After installation, verify that sizer is installed correctly by running the following command:
+
+    ```bash
+    sizer --version
+    sizer -h
+    ```
