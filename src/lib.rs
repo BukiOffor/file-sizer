@@ -10,6 +10,7 @@ use log;
 // this function receives a file path as an arguement
 pub fn entry(path:&PathBuf, size: Option<&String>)-> Result<(),Error> {
     log::info!("🔓sizer initialized at {} 🔒", path.as_os_str().to_str().unwrap());
+    thread::sleep(time::Duration::from_millis(1000));
     let now = time::Instant::now();
 
     //check if path returns an OK()

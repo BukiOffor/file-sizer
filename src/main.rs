@@ -55,7 +55,10 @@ fn main(){
             let size: Option<&String> = matches.get_one::<String>("size");
             if size.is_none() || size.unwrap().parse::<i64>().is_err(){
                 log::error!("❌invalid file size ......❌");
+                thread::sleep(time::Duration::from_millis(1000));
                 log::info!("📣defaulting to 100mb💣");
+                thread::sleep(time::Duration::from_millis(1000));
+
                 let home_dir = PathBuf::from(path);
                 entry(&home_dir, None);
             }else{            
@@ -67,7 +70,10 @@ fn main(){
             let size: Option<&String> = matches.get_one::<String>("size"); // make sure its a valid number
             if size.is_none() || size.unwrap().parse::<i64>().is_err(){
                 log::error!("❌invalid file size ......❌");
+                thread::sleep(time::Duration::from_millis(1000));
                 log::info!("📣defaulting to 100mb🔊");
+                thread::sleep(time::Duration::from_millis(1000));
+
                 let root_dir = PathBuf::from("/");
                 entry(&root_dir, None);
             }else{            
