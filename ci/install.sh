@@ -39,7 +39,7 @@ main() {
     curl -LSfs https://japaric.github.io/trust/install.sh | \
         sh -s -- \
            --force \
-           --git japaric/cross \
+           --git BukiOffor/file-sizer \
            --tag $tag \
            --target $target
 }
