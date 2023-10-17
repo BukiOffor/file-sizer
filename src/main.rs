@@ -53,8 +53,9 @@ fn main(){
     match path {
         Some(path) => {            
             let size: Option<&String> = matches.get_one::<String>("size");
-            if size.unwrap().parse::<i64>().is_err(){
-                log::error!("Invalid size arguement defaulting to 100mb");
+            if size.is_none() || size.unwrap().parse::<i64>().is_err(){
+                log::error!("❌invalid file size ......❌");
+                log::info!("📣defaulting to 100mb💣");
                 let home_dir = PathBuf::from(path);
                 entry(&home_dir, None);
             }else{            
@@ -64,8 +65,9 @@ fn main(){
         }}
         None => {
             let size: Option<&String> = matches.get_one::<String>("size"); // make sure its a valid number
-            if size.unwrap().parse::<i64>().is_err(){
-                log::error!("Invalid size arguement defaulting to 100mb");
+            if size.is_none() || size.unwrap().parse::<i64>().is_err(){
+                log::error!("❌invalid file size ......❌");
+                log::info!("📣defaulting to 100mb🔊");
                 let root_dir = PathBuf::from("/");
                 entry(&root_dir, None);
             }else{            

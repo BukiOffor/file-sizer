@@ -9,7 +9,7 @@ use log;
 
 // this function receives a file path as an arguement
 pub fn entry(path:&PathBuf, size: Option<&String>)-> Result<(),Error> {
-    log::info!("sizer initialized at {}", path.as_os_str().to_str().unwrap());
+    log::info!("🔓sizer initialized at {} 🔒", path.as_os_str().to_str().unwrap());
     let now = time::Instant::now();
 
     //check if path returns an OK()
@@ -22,7 +22,7 @@ pub fn entry(path:&PathBuf, size: Option<&String>)-> Result<(),Error> {
             true => 100,
             false =>  size.unwrap().parse::<i64>().unwrap() //takes care of error in the main function
         };
-        log::info!("you are filtering with {filter} mb");
+        log::info!("📍you are filtering with {filter} mb📍");
         let spawn_size = filter.clone();
         //Spawn a new thread to iterate over some     
         let handle = thread::spawn(move||{
@@ -64,7 +64,7 @@ pub fn entry(path:&PathBuf, size: Option<&String>)-> Result<(),Error> {
              }
         handle.join();
         let finished = now.elapsed().as_secs();
-        log::info!("finished succesfully in {} seconds", finished);
+        log::info!("🕕 finished succesfully in {} seconds 🕐", finished);
         Ok(())
 
         }else{
@@ -145,12 +145,12 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
         let size_in_mb = size as f64 / (1024 * 1024) as f64;
         if filter != 100 {    
             if size as f64 > (filter * 1024 * 1024) as f64{
-                log::debug!("{}: {:.2}MB", x, size_in_mb);
+                log::debug!("✅{}: {:.2}MB", x, size_in_mb);
                 return Some((file, size_in_mb))
                 }
         }else{
             if size as f64 > (100 * 1024 * 1024) as f64{
-                log::debug!("{}: {:.2}MB", x, size_in_mb);
+                log::debug!("✅{}: {:.2}MB", x, size_in_mb);
                 return Some((file, size_in_mb))
                 }
             }
