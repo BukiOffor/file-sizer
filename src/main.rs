@@ -2,7 +2,7 @@
 
 use std::{fs, thread, path::PathBuf, env, time, process};
 use std::env::{current_dir, set_current_dir};
-use sizer::test_read_files;
+use sizer::entry;
 use clap::{Parser, Subcommand, Command, arg};
 use log;
 
@@ -40,14 +40,14 @@ fn main(){
             let size: Option<&String> = matches.get_one::<String>("size");
             
             let home_dir = PathBuf::from(path);
-            test_read_files(&home_dir, size);
+            entry(&home_dir, size);
             
         }
         None => {
             let size: Option<&String> = matches.get_one::<String>("size");
             //gets the current directory
             let root_dir = PathBuf::from("/");
-            test_read_files(&root_dir, size);
+            entry(&root_dir, size);
         }
     }
 

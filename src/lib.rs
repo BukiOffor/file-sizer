@@ -8,7 +8,7 @@ use log;
 
 
 // this function receives a file path as an arguement
-pub fn test_read_files(path:&PathBuf, size: Option<&String>){
+pub fn entry(path:&PathBuf, size: Option<&String>){
     log::info!("sizer initialized at {}", path.as_os_str().to_str().unwrap());
     let now = time::Instant::now();
 
@@ -34,7 +34,7 @@ pub fn test_read_files(path:&PathBuf, size: Option<&String>){
                 //checks it entry is file or folder
                 match meta_data.is_dir() {
                     true => {
-                        test_recur(&file, spawn_size )
+                        subfolders_recur(&file, spawn_size )
                     },
                     false => {
                     let large_file = run_command(&meta_data, &file, spawn_size); 
@@ -54,7 +54,7 @@ pub fn test_read_files(path:&PathBuf, size: Option<&String>){
             //checks it entry is file or folder
             match meta_data.is_dir() {
                 true => {
-                    test_recur(&file, filter)
+                    subfolders_recur(&file, filter)
                 },
                 false => {
                     let _ = run_command(&meta_data, file, filter); 
@@ -77,7 +77,7 @@ pub fn test_read_files(path:&PathBuf, size: Option<&String>){
 // A recursive fuction that takes a file path
 // checks if file is folder
 // if folder it calls it self
-fn test_recur(args: &PathBuf, size: i64){
+fn subfolders_recur(args: &PathBuf, size: i64){
     if fs::read_dir(&args).is_ok() {
         // reads the files in a dir, checked with the is_ok() method above that file is elligible to read
         for files in fs::read_dir(&args).expect("msg"){
@@ -93,15 +93,32 @@ fn test_recur(args: &PathBuf, size: i64){
                 }
             }
             // get the metadata of a file
-            let meta_data = files.as_ref().unwrap().metadata().unwrap();
+            let meta_data = files.as_ref().unwrap().metadata();
+            match meta_data {
+                Ok(_) => (),
+                Err(err) => {
+                    match err.raw_os_error().unwrap() == 9 {
+                        true => continue,
+                        false => {
+                            log::error!("{:?}", err.to_string());
+                            process::exit(1);
+                        }
+                    }
+                }
+            }
             // return full path of an entry
             let file = &files.as_ref().unwrap().path();
+            
+            // get the metadata of a file
+            let meta_data = files.as_ref().unwrap().metadata().unwrap();
+
             //checks if a file is a directory
+            
             match meta_data.is_dir(){
                 true =>{
                     let file = &files.unwrap().path();
                     //log::debug!("{file:?} is a folder");
-                    let _ = test_recur(file, size);
+                    let _ = subfolders_recur(file, size);
                 },
                 false => {
                 let file = run_command(&meta_data, &file, size);  
@@ -140,7 +157,7 @@ fn run_command<'a>(meta_data: &Metadata, file: &  'a PathBuf, filter:i64)-> Opti
     }
 
 
-// thread using 2 threads, push the files bigger than 180mb to a vector using a message
+// thread using 2 threads, push the files bigger than 180mb to a vector using a message 
 // loop through the vector and display the results at the end
 // allow args as file path and or file size to display
 // change 1000MB to 1GB
