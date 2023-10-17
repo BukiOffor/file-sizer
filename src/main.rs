@@ -7,23 +7,6 @@ use clap::{Parser, Subcommand, Command, arg};
 use log;
 
 
-#[derive(Parser,Default,Debug)]
-#[command(author = "Buki", version = "0", about = "This tool searches for files bigger than 100mb in a given directory", long_about = None)]
-struct Cli {
-    /// Optional name to operate on
-    name: Option<String>,
-
-    /// Sets a custom config file
-    #[arg(short, long, value_name = "PATH")]
-    config: Option<PathBuf>,
-
-    /// Turn debugging information on
-    #[arg(short, long, action = clap::ArgAction::Count)]
-    debug: u8,
-}
-
-
-
 /// This is the main function of a Rust program that searches for files bigger than 100mb in a given directory or the whole file system if no filepath is given.
 ///
 /// # Example Usage
@@ -55,10 +38,12 @@ struct Cli {
 /// # Outputs
 /// None. The function performs file size calculations and logging based on the provided command line arguments.
 fn main(){
+    env::set_var("RUST_LOG", "debug");
     env_logger::init();
+
     let matches = Command::new("Sizer")
     .version("1.0")
-    .author("Buki O. <buki.offor@gmail.com>")
+    .author("Buki O. <ebuka2264@yahoo.com>")
     .about("This tool searches for files bigger than 100mb in a given directory or the whole file system if no filepath is given")
     .arg(arg!(-p --path <VALUE> "The filepath that you want to perform a search on").required(false))
     .arg(arg!(-s --size <VALUE> "The size of the file in megabyte that you want to log when found, defaults to 100mb by default").required(false))

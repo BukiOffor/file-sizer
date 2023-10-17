@@ -3,7 +3,14 @@
 name = "sizer"
 version = "0.1.0"
 edition = "2021"
-
+authors = ["Buki <ebuka2264@yahoo.com>"]
+license = "MIT"
+description = "his tool searches for files bigger than 100mb in a given directory or the whole file system if no filepath is given"
+readme = "README.md"
+homepage = "https://github.com/BukiOffor/file-sizer"
+repository = "https://github.com/BukiOffor/file-sizer"
+keywords = ["cli", "search","file size", "demo"]
+categories = ["command-line-utilities"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
