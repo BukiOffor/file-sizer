@@ -36,14 +36,18 @@ fn main(){
 
     let path = matches.get_one::<String>("path");
     match path {
-        Some(path) => {
+        Some(path) => {            
+            let size: Option<&String> = matches.get_one::<String>("size");
+            
             let home_dir = PathBuf::from(path);
-            test_read_files(&home_dir);
+            test_read_files(&home_dir, size);
+            
         }
         None => {
+            let size: Option<&String> = matches.get_one::<String>("size");
             //gets the current directory
-            let current_dir = current_dir().unwrap();
-            test_read_files(&current_dir);
+            let root_dir = PathBuf::from("/");
+            test_read_files(&root_dir, size);
         }
     }
 
@@ -74,11 +78,11 @@ fn second_main(){
         args.next();
         // reads the home directory
         let home_dir = PathBuf::from(args.next().unwrap());
-        test_read_files(&home_dir);
+        //test_read_files(&home_dir);
     }else{
         //gets the current directory
         let current_dir = current_dir().unwrap();
-        test_read_files(&current_dir);
+        //test_read_files(&current_dir);
         //println!("{:?}",home_dir)
     }
     
