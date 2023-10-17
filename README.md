@@ -40,7 +40,7 @@ These guidelines will help you install and set up sizer on your system. Please f
 
 Before you begin, make sure your system meets the following prerequisites:
 
-- Running a modern OS
+- Have Homebrew installed for Mac Users
 
 ## Installation Steps
 
