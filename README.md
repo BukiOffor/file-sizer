@@ -51,7 +51,7 @@ Before you begin, make sure your system meets the following prerequisites:
 
    - **macOS:**
         ```bash 
-        brew tap BukiOffor/homebrew-sizer
+        brew tap BukiOffor/sizer
         brew install sizer
         ```
 
