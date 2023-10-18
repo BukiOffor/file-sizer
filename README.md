@@ -1,19 +1,6 @@
 ## Summary
 This code implements a Rust program that searches for files bigger than 100mb in a given directory or the whole file system if no filepath is given. It uses the `clap` and `std` libraries for command line argument parsing and file size calculation, respectively.
 
-## Example Usage For the Script
-```rust
-// Make sure you are in the project folder
-// Run the program with a specific directory path
-$ cargo run -q -- -p /path/to/directory
-
-// Run the program without specifying a directory path (searches the whole file system)
-$ cargo run -q
-
-// Run the program with a specific directory path and custom file size threshold
-$ cargo run -q -- -p /path/to/directory -s 200
-```
-
 
 # Installation Guidelines
 
@@ -60,6 +47,21 @@ Before you begin, make sure your system meets the following prerequisites:
     sizer --version
     sizer -h
     ```
+
+
+## Example Usage For the Script
+```rust
+// Make sure you are in the project folder
+// Run the program with a specific directory path
+$ cargo run -q -- -p /path/to/directory
+
+// Run the program without specifying a directory path (searches the whole file system)
+$ cargo run -q
+
+// Run the program with a specific directory path and custom file size threshold
+$ cargo run -q -- -p /path/to/directory -s 200
+```
+
 
 ## Code Analysis
 ### Inputs
