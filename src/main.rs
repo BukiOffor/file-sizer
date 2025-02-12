@@ -1,11 +1,10 @@
 #![allow(unused)]
 
-use std::{fs, thread, path::PathBuf, env, time, process};
-use std::env::{current_dir, set_current_dir};
-use sizer::entry;
-use clap::{Parser, Subcommand, Command, arg};
+use clap::{arg, Command, Parser, Subcommand};
 use log;
-
+use sizer::entry;
+use std::env::{current_dir, set_current_dir};
+use std::{env, fs, path::PathBuf, process, thread, time};
 
 /// This is the main function of a Rust program that searches for files bigger than 100mb in a given directory or the whole file system if no filepath is given.
 ///
@@ -37,7 +36,7 @@ use log;
 ///
 /// # Outputs
 /// None. The function performs file size calculations and logging based on the provided command line arguments.
-fn main(){
+fn main() {
     env::set_var("RUST_LOG", "debug");
     env_logger::init();
 
@@ -51,9 +50,9 @@ fn main(){
 
     let path = matches.get_one::<String>("path");
     match path {
-        Some(path) => {            
+        Some(path) => {
             let size: Option<&String> = matches.get_one::<String>("size");
-            if size.is_none() || size.unwrap().parse::<i64>().is_err(){
+            if size.is_none() || size.unwrap().parse::<i64>().is_err() {
                 log::error!("❌invalid file size ......❌");
                 thread::sleep(time::Duration::from_millis(1000));
                 log::info!("📣defaulting to 100mb💣");
@@ -61,14 +60,14 @@ fn main(){
 
                 let home_dir = PathBuf::from(path);
                 entry(&home_dir, None);
-            }else{            
+            } else {
                 let home_dir = PathBuf::from(path);
                 entry(&home_dir, size);
-            
-        }}
+            }
+        }
         None => {
             let size: Option<&String> = matches.get_one::<String>("size"); // make sure its a valid number
-            if size.is_none() || size.unwrap().parse::<i64>().is_err(){
+            if size.is_none() || size.unwrap().parse::<i64>().is_err() {
                 log::error!("❌invalid file size ......❌");
                 thread::sleep(time::Duration::from_millis(1000));
                 log::info!("📣defaulting to 100mb🔊");
@@ -76,51 +75,11 @@ fn main(){
 
                 let root_dir = PathBuf::from("/");
                 entry(&root_dir, None);
-            }else{            
+            } else {
                 //gets the current directory
                 let root_dir = PathBuf::from("/");
                 entry(&root_dir, size);
             }
         }
     }
-    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-fn old_main(){
-    
-    env_logger::init();
-    let args:Vec<String> = env::args().collect();
-    println!("{args:?}");
-    if args.len() > 2 {
-        log::error!("wrong arguement, please use file path as an arguement");
-        process::exit(1)
-    }else if args.len() == 2 {
-        let mut args = args.iter();
-        args.next();
-        // reads the home directory
-        let home_dir = PathBuf::from(args.next().unwrap());
-        //test_read_files(&home_dir);
-    }else{
-        //gets the current directory
-        let current_dir = current_dir().unwrap();
-        //test_read_files(&current_dir);
-        //println!("{:?}",home_dir)
-    }
-    
-}
-
