@@ -127,10 +127,8 @@ fn run_command<'a>(
     filter: i64,
 ) -> Option<(&'a PathBuf, f64)> {
     let size = meta_data.len();
-    //let x = file.file_name().expect("failed to get file name for some reason").to_str().unwrap();
     let x = file.as_os_str().to_str().unwrap();
     if size < 1024 * 1024 {
-        //log::debug!("{}: {:}KB", x, size/1024):
     } else {
         let size_in_mb = size as f64 / (1024 * 1024) as f64;
         if filter != 100 {
